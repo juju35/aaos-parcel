@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased
+
+### Changes
+- Build: Android Gradle plugin 9.4 with its built-in Kotlin (no more Kotlin Android plugin), Gradle 9.8.
+
 ## 0.1.0
 
 First version.
