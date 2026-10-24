@@ -24,7 +24,7 @@ Everything the Play Console asks for, ready to paste or upload. Templated Car Ap
 | --- | --- |
 | Privacy policy | URL above |
 | Ads | No ads |
-| App access | Some functionality is restricted. Note for the reviewer: *"The app shows the deliveries of a Parcel account (Parcel Premium API key). To try it without one: Réglages › Clé d'API Parcel (or Configurer on the first screen), parked, type demo and confirm: made-up deliveries are shown, and the hourly check posts a notification for one of them."* |
+| App access | Some functionality is restricted. Note for the reviewer: *"The app shows the deliveries of a Parcel account (Parcel Premium API key). To try it without one, parked (the app is blocked while driving): Configurer on the first screen (or Réglages › Clé d'API Parcel), type demo and confirm: made-up deliveries are shown, and the hourly check posts a notification for one of them."* |
 | Content rating | Category "All other app types"; no to every question → PEGI 3 / everyone |
 | Target audience | 18 and over (drivers); not designed for children |
 | Financial features, health | None |

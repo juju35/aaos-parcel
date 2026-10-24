@@ -50,7 +50,7 @@
 
     <!-- API key -->
     <string name="api_key_hint">Clé d\'API</string>
-    <string name="api_key_instructions">Générez une clé sur web.parcelapp.net (abonnement Parcel Premium requis), à l\'arrêt.</string>
+    <string name="api_key_instructions">Générez une clé sur web.parcelapp.net (abonnement Parcel Premium requis).</string>
     <string name="api_key_empty">Saisissez la clé d\'API.</string>
     <string name="api_key_saved">Clé enregistrée</string>
     <string name="api_key_delete">Supprimer la clé</string>

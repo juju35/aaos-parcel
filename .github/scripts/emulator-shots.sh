@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # Runs the APK on the booted emulator: install, launch, type the "demo" API key, then screenshots of
-# the list, a delivery and the settings, and one run of the hourly check. Fails on a crash of the app.
+# the list, a delivery and the settings, a drive (the app must be blocked), and one run of the hourly
+# check. Fails on a crash of the app.
 # The templates host draws the app in a surface: no view tree to read, taps go by position
 # (fractions of the screen, from the template layout).
 # Usage: emulator-shots.sh <apk> <out dir> <name prefix>
@@ -112,10 +113,34 @@ tap $SETTINGS
 shot settings 5
 check
 
+# Parked use only: once the car moves, the system must replace the app with its blocking screen.
+tap $BACK
+sleep 3
+vhal() { adb shell cmd car_service inject-vhal-event "$1" "$2" 2>&1 | head -2 | while read -r l; do echo "::notice::vhal $1=$2: $l"; done; }
+blocked() { adb shell dumpsys activity activities | grep -E "topResumedActivity|mResumedActivity" | grep -q -i "blocking"; }
+vhal 0x11200402 false   # PARKING_BRAKE_ON
+vhal 0x11400400 8       # GEAR_SELECTION: drive
+vhal 0x11600207 12      # PERF_VEHICLE_SPEED, m/s
+shot driving 6
+adb shell dumpsys activity activities | grep -E "topResumedActivity" | head -1 | while read -r l; do echo "::notice::driving: $l"; done
+if blocked; then
+  echo "::notice::blocked while driving"
+else
+  echo "::error::the app is not blocked while driving"
+  exit 1
+fi
+vhal 0x11600207 0
+vhal 0x11400400 4       # park
+vhal 0x11200402 true
+sleep 5
+check
+
 # One run of the hourly check (WorkManager on JobScheduler): it must not crash.
-JOB=$(adb shell dumpsys jobscheduler "$PKG" 2>/dev/null | grep -oE "JOB #u[0-9]+a[0-9]+/[0-9]+" | head -1 | sed 's#.*/##')
+adb shell dumpsys jobscheduler 2>/dev/null | grep -F "$PKG/" | head -3 | while read -r l; do echo "::notice::job: $l"; done
+JOB=$(adb shell dumpsys jobscheduler 2>/dev/null | grep -F "$PKG/androidx.work" | grep -oE "#u[0-9]+a[0-9]+/[0-9]+" | head -1 | sed 's#.*/##')
+USER_ID=$(adb shell am get-current-user | tr -d '\r')
 if [ -n "$JOB" ]; then
-  adb shell cmd jobscheduler run -f "$PKG" "$JOB" | while read -r l; do echo "::notice::check job $JOB: $l"; done
+  adb shell cmd jobscheduler run -f -u "$USER_ID" "$PKG" "$JOB" | while read -r l; do echo "::notice::check job $JOB: $l"; done
   sleep 10
   check
 else

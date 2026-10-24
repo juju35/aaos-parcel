@@ -19,10 +19,12 @@ Parcel pour Android Automotive affiche les livraisons suivies dans votre compte 
 • Une notification par colis mis à jour ; un appui ouvre sa fiche
 
 ★ Configuration
-• Saisissez votre clé d'API Parcel une seule fois, à l'arrêt, depuis les réglages de l'application
+• Saisissez votre clé d'API Parcel une seule fois, depuis les réglages de l'application
 • La clé est générée sur web.parcelapp.net et nécessite un abonnement Parcel Premium
 
-★ Pensée pour la conduite
+★ À l'arrêt uniquement
+• L'application s'utilise voiture à l'arrêt : le système la bloque dès que le véhicule roule
+• Les notifications de mise à jour arrivent aussi en roulant
 • Interface Android Automotive standard : grands éléments, lisible d'un coup d'œil
 • Aucun compte supplémentaire, aucune publicité, aucun suivi
 

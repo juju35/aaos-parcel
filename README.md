@@ -5,8 +5,9 @@
 ![Parcel](play/graphics/feature-graphic.png)
 
 [Parcel](https://parcelapp.net) deliveries for **Android Automotive OS 12+** (API 31), built with the
-[Car App Library](https://developer.android.com/training/cars/apps) templates (POI category),
-so it follows the platform's driving guidelines out of the box.
+[Car App Library](https://developer.android.com/training/cars/apps) templates (POI category).
+**Parked use only**: the app isn't declared distraction-optimized, so the system blocks it as soon as the car
+moves; the notifications still arrive while driving.
 
 - Deliveries under way first, by expected date: status in colour, expected date, last event and where it happened
 - Optionally the recently delivered ones too (Settings › Deliveries listed)
@@ -14,7 +15,7 @@ so it follows the platform's driving guidelines out of the box.
   **Go** hands the pickup point to the car's navigation app when the parcel awaits pickup
 - **Hourly check** in the background: one notification per delivery with a new status or event; tapping it opens
   the delivery
-- Settings: Parcel API key (typed parked, checked before it is kept), deliveries listed, notifications on or off
+- Settings: Parcel API key (checked before it is kept), deliveries listed, notifications on or off
 - Demo key `demo`: made-up deliveries with no Parcel account, for a try-out, the emulator run and the Play review
 
 ## Screenshots
@@ -79,7 +80,7 @@ On a real car, third-party templated apps are installed through Google Play (int
 | --- | --- |
 | Lint | pre-commit (whitespace, YAML/XML/TOML, Ruff for `scripts/`), Detekt + ktlint (Kotlin quality, dead code), Android lint, jscpd (duplication). Detekt and Android lint findings go to code scanning, shown on pull requests |
 | Build | Debug APK, as a build artifact; Kotlin compiler errors as annotations |
-| Emulator | Runs the release build on an Android Automotive emulator with the templates host (landscape and portrait) on each app change, with the demo key; fails on a crash or a template the host refuses. Run by hand with *screenshots* to refresh the Play screenshots |
+| Emulator | Runs the release build on an Android Automotive emulator with the templates host (landscape and portrait) on each app change, with the demo key; fails on a crash, a template the host refuses, or if the app isn't blocked once the car moves. Run by hand with *screenshots* to refresh the Play screenshots |
 | Release | On `main`, when `appVersion` in `app/build.gradle.kts` has no tag yet: signed APK + App Bundle, notes from `CHANGELOG.md`; upload to Google Play when its secret is set |
 | Update release notes | Rewrites a release's notes from `CHANGELOG.md` (input `tag`) |
 | Clean up merged branches | Deletes merged branches after each pull request and weekly |
