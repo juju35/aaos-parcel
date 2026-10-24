@@ -11,6 +11,18 @@ delivery has news. The car counterpart of [ha-parcel](https://github.com/juju35/
 - **Hourly check** in the background: one notification per delivery with a new status or event; tapping it opens
   the delivery
 - Settings: Parcel API key, deliveries listed, notifications on or off
+- Demo key `demo`: made-up deliveries with no Parcel account, for a try-out, the emulator run and the Play review
+
+## Screenshots
+
+| Deliveries | Delivery | Settings |
+| --- | --- | --- |
+| ![Deliveries](screenshots/list.png) | ![Delivery detail](screenshots/detail.png) | ![Settings](screenshots/settings.png) |
+
+Mock-ups of the templates as the car's host draws them (dark theme, 1408 × 792), made with the demo deliveries
+by `python scripts/screenshots.py` (Playwright, the app's own icons). The Screenshots workflow runs it again when
+the script, the icons or the demo data change. Real screenshots from the Automotive emulator are in
+`play/graphics/automotive`.
 
 ## Parcel API key
 
@@ -40,7 +52,7 @@ app/src/main/java/me/jstephan/parcel/
 ├── ParcelApp.kt              # notification channel, hourly check schedule
 ├── ParcelService.kt          # CarAppService + Session (opens a delivery from its notification)
 ├── Prefs.kt                  # API key (not backed up), filter, notifications
-├── data/                     # HTTP, Parcel API client, models, repository (cache + change detection)
+├── data/                     # HTTP, Parcel API client, models, repository (cache + change detection), demo data
 ├── work/                     # CheckWorker (hourly), Notifier
 └── ui/                       # list, detail (ListTemplate), settings, API key (SignInTemplate)
 ```
@@ -61,9 +73,57 @@ adb shell dumpsys jobscheduler | grep -A2 me.jstephan.parcel   # JOB #u0a123/<id
 adb shell cmd jobscheduler run -f me.jstephan.parcel <id>
 ```
 
-CI: build, Detekt + ktlint, Android lint and jscpd on every pull request; pushing a new `appVersion` with its
-CHANGELOG.md section to `main` publishes the release (APK + bundle, Google Play when its secrets are set).
-See [play/README.md](play/README.md) for the store listing.
+On a real car, third-party templated apps are installed through Google Play (internal or closed testing track).
+
+## CI
+
+| Workflow | What |
+| --- | --- |
+| Lint | pre-commit (whitespace, YAML/XML/TOML, Ruff for `scripts/`), Detekt + ktlint (Kotlin quality, dead code), Android lint, jscpd (duplication). Detekt and Android lint findings go to code scanning, shown on pull requests |
+| Build | Debug APK, as a build artifact; Kotlin compiler errors as annotations |
+| Emulator | Runs the release build on an Android Automotive emulator with the templates host (landscape and portrait) on each app change, with the demo key; fails on a crash or a template the host refuses. Run by hand with *screenshots* to refresh the Play screenshots |
+| Release | On `main`, when `appVersion` in `app/build.gradle.kts` has no tag yet: signed APK + App Bundle, notes from `CHANGELOG.md`; upload to Google Play when its secret is set |
+| Update release notes | Rewrites a release's notes from `CHANGELOG.md` (input `tag`) |
+| Clean up merged branches | Deletes merged branches after each pull request and weekly |
+| Stale | Marks and closes inactive issues and pull requests |
+| Screenshots | Makes the README screenshots again and commits them when they change |
+
+Release signing uses the repository secrets `SIGNING_KEYSTORE_BASE64`, `SIGNING_STORE_PASSWORD`,
+`SIGNING_KEY_ALIAS` and `SIGNING_KEY_PASSWORD`; without them the release is signed with the debug key
+(emulator / adb only, not accepted by Google Play).
+
+## Google Play
+
+Listing texts, graphics (`python scripts/play_graphics.py`), privacy policy and the Play Console answers are in
+[`play/`](play/README.md).
+
+**Upload key** (once, kept outside the repository; Play App Signing holds the app signing key):
+
+```sh
+keytool -genkeypair -v -keystore upload.jks -alias upload -keyalg RSA -keysize 4096 -validity 10000
+gh secret set SIGNING_KEYSTORE_BASE64 --body "$(base64 < upload.jks | tr -d '\n')"
+gh secret set SIGNING_STORE_PASSWORD
+gh secret set SIGNING_KEY_ALIAS --body upload
+gh secret set SIGNING_KEY_PASSWORD
+```
+
+**Automatic upload** (after the first release, uploaded by hand): a Google Cloud service account with the
+Google Play Android Developer API enabled, invited in Play Console › Users and permissions with release rights on
+the app; its JSON key goes in the `PLAY_SERVICE_ACCOUNT_JSON` secret. The Release workflow then sends each new
+version to `automotive:qa` (variable `PLAY_TRACK`) as a `draft` (variable `PLAY_RELEASE_STATUS`, `completed` once
+the app is published), with the notes of `play/whatsnew/fr-FR.txt`.
+
+Locally, `pre-commit install` (Java 17 and Node needed) sets up the same checks:
+
+| Hook | Stage | What |
+| --- | --- | --- |
+| pre-commit-hooks, Ruff | commit | whitespace, YAML/JSON/XML/TOML, Python lint and format |
+| vulture | commit | dead code in `scripts/` |
+| detekt | commit (Kotlin changed) | Kotlin lint (ktlint rules) and dead code (unused private members, parameters, imports) |
+| jscpd | commit | duplicated code, Kotlin and Python (`.jscpd.json`) |
+| Android lint | push (app changed) | Android lint, unused resources as errors |
+
+`pre-commit run --all-files` runs the commit stage on everything, `pre-commit run --hook-stage pre-push --all-files` Android lint.
 
 ## License
 

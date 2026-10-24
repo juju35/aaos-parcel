@@ -23,6 +23,13 @@ jobs:
           # Their own jobs below report them as annotations.
           SKIP: detekt,jscpd,android-lint
 
+  ruff:
+    name: Ruff (annotations)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: astral-sh/ruff-action@v3
+
   detekt:
     name: Detekt + ktlint (Kotlin quality, dead code)
     runs-on: ubuntu-latest

@@ -4,7 +4,8 @@
   "absolute": false,
   "gitignore": true,
   "format": [
-    "kotlin"
+    "kotlin",
+    "python"
   ],
   "ignore": [
     "**/build/**",

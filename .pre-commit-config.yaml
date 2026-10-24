@@ -14,6 +14,18 @@ repos:
       - id: check-toml
       - id: check-merge-conflict
       - id: mixed-line-ending
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.16.9
+    hooks:
+      - id: ruff-check
+        args: [--fix]
+      - id: ruff-format
+  # Dead code in the Python scripts.
+  - repo: https://github.com/jendrikseipp/vulture
+    rev: v2.16
+    hooks:
+      - id: vulture
+        args: [scripts, --min-confidence, "60"]
   - repo: local
     hooks:
       # Kotlin lint (ktlint rules) and dead code (unused private members, parameters,
@@ -24,14 +36,14 @@ repos:
         language: system
         pass_filenames: false
         files: \.(kt|kts)$|^config/detekt/
-      # Duplicated Kotlin code, same settings as CI (.jscpd.json).
+      # Duplicated code in Kotlin and Python, same settings as CI (.jscpd.json).
       - id: jscpd
         name: jscpd (duplication)
         entry: jscpd .
         language: node
         additional_dependencies: ["jscpd@5.4.2"]
         pass_filenames: false
-        types_or: [kotlin]
+        types_or: [kotlin, python]
       # Android lint, unused resources included: slower, so before a push.
       - id: android-lint
         name: Android lint (unused resources)
