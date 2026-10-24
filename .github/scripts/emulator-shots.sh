@@ -26,7 +26,7 @@ tap() {
 }
 
 keyboard_shown() {
-  adb shell dumpsys input_method | grep -q "mInputShown=true"
+  adb shell dumpsys input_method | grep -q -E "mInputShown=true|mIsInputViewShown=true|isInputViewShown=true"
 }
 
 crashed() {
@@ -85,17 +85,22 @@ adb shell input text "demo"
 adb shell input keyevent 66
 check
 
+# The keyboard can stay up once the key is accepted: BACK closes it (only when it is shown, or it
+# would leave the app).
+sleep 8
+adb shell dumpsys input_method | grep -E "mInputShown|InputViewShown" | head -3 | while read -r l; do echo "::notice::ime $l"; done
+keyboard_shown && adb shell input keyevent 4
 # The demo deliveries; carrier names come from Parcel's public list (network).
-shot list 10
+shot list 4
 check
 
 # Positions in the template, landscape and portrait differ.
 # First row under the header; back arrow of the header at (56, 126); the settings icon is the
-# last action of the strip, at the top right.
+# last action of the strip, right of the content column (emulator screenshots: 905 px of 1024, 745 of 800).
 if [ "$W" -gt "$H" ]; then
-  ROW="0.40 0.32"; BACK="0.055 0.165"; SETTINGS_X=$(awk -v w="$W" 'BEGIN{printf "%.3f", (w-72)/w}'); SETTINGS_Y=0.165
+  ROW="0.40 0.32"; BACK="0.055 0.165"; SETTINGS="0.884 0.165"
 else
-  ROW="0.40 0.20"; BACK="0.07 0.10"; SETTINGS_X=$(awk -v w="$W" 'BEGIN{printf "%.3f", (w-72)/w}'); SETTINGS_Y=0.10
+  ROW="0.40 0.20"; BACK="0.07 0.10"; SETTINGS="0.931 0.10"
 fi
 
 tap $ROW
@@ -103,7 +108,7 @@ shot detail 5
 check
 tap $BACK
 sleep 3
-tap "$SETTINGS_X" "$SETTINGS_Y"
+tap $SETTINGS
 shot settings 5
 check
 

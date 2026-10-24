@@ -44,7 +44,8 @@
     <string name="filter_active">En cours uniquement</string>
     <string name="notifications_title">Notifications</string>
     <string name="check_hourly">Vérification toutes les heures</string>
-    <string name="last_check">Dernière vérification %1$s</string>
+    <string name="last_check">Vérifié %1$s</string>
+    <string name="just_now">à l\'instant</string>
     <string name="permission_denied">Notifications refusées</string>
 
     <!-- API key -->

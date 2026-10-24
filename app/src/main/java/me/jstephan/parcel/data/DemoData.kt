@@ -34,7 +34,7 @@ internal object DemoData {
 
     private fun headphones(now: Long) = delivery(
         description = "Casque audio",
-        carrier = "colissimo",
+        carrier = "lp",
         tracking = "6A23456789012",
         status = Status.OUT_FOR_DELIVERY,
         events = listOf(
@@ -47,12 +47,12 @@ internal object DemoData {
 
     private fun shoes(now: Long) = delivery(
         description = "Chaussures de randonnée",
-        carrier = "chronopost",
-        tracking = "XW123456789FR",
+        carrier = "relay",
+        tracking = "48291736",
         status = Status.AWAITING_PICKUP,
         events = listOf(
-            event("Colis disponible en point relais", now - 5 * HOUR, "Relais Pickup, 12 rue de Paris, 35000 Rennes"),
-            event("Colis en cours d'acheminement", now - DAY, "Chilly-Mazarin")
+            event("Colis disponible en Point Relais", now - 5 * HOUR, "Le Kiosque, 12 rue de Paris, 35000 Rennes"),
+            event("Colis en cours d'acheminement", now - DAY, "Agence de Rennes")
         ),
         extra = "À retirer avant le ${day(now + 8 * DAY)}, avec une pièce d'identité"
     )
@@ -81,8 +81,8 @@ internal object DemoData {
 
     private fun cable(now: Long) = delivery(
         description = "Câble USB-C",
-        carrier = "dpd",
-        tracking = "250012345678",
+        carrier = "gls",
+        tracking = "ZK41D9PQ",
         status = Status.DELIVERED,
         events = listOf(
             event("Colis livré", now - DAY - 4 * HOUR, "Rennes"),

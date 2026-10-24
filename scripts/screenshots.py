@@ -49,7 +49,7 @@ D = timedelta(days=1)
 DELIVERIES = [
     {
         "title": "Casque audio",
-        "carrier": "Colissimo",
+        "carrier": "La Poste",
         "tracking": "6A23456789012",
         "status": "out_for_delivery",
         "expected": (TODAY, None),
@@ -61,14 +61,14 @@ DELIVERIES = [
     },
     {
         "title": "Chaussures de randonnée",
-        "carrier": "Chronopost",
-        "tracking": "XW123456789FR",
+        "carrier": "Mondial Relay",
+        "tracking": "48291736",
         "status": "awaiting_pickup",
         "expected": None,
         "extra": "À retirer avant le 1 novembre, avec une pièce d'identité",
         "events": [
-            ("Colis disponible en point relais", NOW - 5 * H, "Relais Pickup, 12 rue de Paris, 35000 Rennes"),
-            ("Colis en cours d'acheminement", NOW - D, "Chilly-Mazarin"),
+            ("Colis disponible en Point Relais", NOW - 5 * H, "Le Kiosque, 12 rue de Paris, 35000 Rennes"),
+            ("Colis en cours d'acheminement", NOW - D, "Agence de Rennes"),
         ],
     },
     {
@@ -93,8 +93,8 @@ DELIVERIES = [
     },
     {
         "title": "Câble USB-C",
-        "carrier": "DPD",
-        "tracking": "250012345678",
+        "carrier": "GLS",
+        "tracking": "ZK41D9PQ",
         "status": "delivered",
         "expected": None,
         "events": [("Colis livré", NOW - D - 4 * H, "Rennes"), ("En cours de livraison", NOW - D - 7 * H, "Rennes")],
@@ -240,7 +240,7 @@ def settings_page() -> str:
         row(
             f'<div class="ic">{icon("ic_notifications", 40)}</div>',
             "Notifications",
-            ["Vérification toutes les heures", "Dernière vérification il y a 12 minutes"],
+            ["Vérification toutes les heures", "Vérifié il y a 12 min"],
             switch,
         ),
     ]

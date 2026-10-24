@@ -48,7 +48,7 @@ class SettingsScreen(carContext: CarContext) : Screen(carContext) {
         }
         .build()
 
-    /** "Toutes les heures", then "Dernière vérification il y a 12 minutes". */
+    /** "Vérification toutes les heures", then "Vérifié il y a 12 min". */
     private fun notificationsRow(): Row {
         val toggle = Toggle.Builder { checked ->
             prefs.notifications = checked
@@ -61,7 +61,12 @@ class SettingsScreen(carContext: CarContext) : Screen(carContext) {
             .setToggle(toggle)
         val last = prefs.lastCheck
         if (last > 0) {
-            val ago = DateUtils.getRelativeTimeSpanString(last, System.currentTimeMillis(), DateUtils.MINUTE_IN_MILLIS)
+            val now = System.currentTimeMillis()
+            val ago = if (now - last < DateUtils.MINUTE_IN_MILLIS) {
+                carContext.getString(R.string.just_now)
+            } else {
+                DateUtils.getRelativeTimeSpanString(last, now, DateUtils.MINUTE_IN_MILLIS, DateUtils.FORMAT_ABBREV_RELATIVE)
+            }
             row.addText(carContext.getString(R.string.last_check, ago))
         }
         return row.build()

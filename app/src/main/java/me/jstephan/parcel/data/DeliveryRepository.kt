@@ -55,7 +55,10 @@ class DeliveryRepository private constructor(context: Context) {
             prefs.lastCheck = 0L
             deliveriesFile.delete()
             seenFile.delete()
-            body?.let(::store)
+            body?.let {
+                store(it)
+                refreshCarriers()
+            }
         }
     }
 
