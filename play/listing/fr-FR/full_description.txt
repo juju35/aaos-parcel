@@ -1,0 +1,33 @@
+Suivez vos colis Parcel directement sur l'écran de votre voiture, et soyez prévenu à chaque nouvelle étape.
+
+Parcel pour Android Automotive affiche les livraisons suivies dans votre compte Parcel et vérifie toutes les heures si l'une d'elles a changé : nouveau statut, nouvel événement du transporteur. Une notification vous l'indique aussitôt.
+
+★ Vos colis
+• Liste des colis en cours, triés par date de livraison prévue
+• Statut en couleur : en transit, en cours de livraison, à retirer, livré, incident…
+• Dernier événement du transporteur et lieu
+• Affichez aussi les colis livrés récemment, ou seulement ceux en cours
+
+★ La fiche colis
+• Date ou créneau de livraison prévu
+• Transporteur et numéro de suivi
+• Historique des événements
+• Colis à retirer : bouton « Y aller » vers le point de retrait dans l'application de navigation de la voiture
+
+★ Notifications
+• Vérification automatique toutes les heures quand la voiture est allumée et connectée
+• Une notification par colis mis à jour ; un appui ouvre sa fiche
+
+★ Configuration
+• Saisissez votre clé d'API Parcel une seule fois, depuis les réglages de l'application
+• La clé est générée sur web.parcelapp.net et nécessite un abonnement Parcel Premium
+
+★ À l'arrêt uniquement
+• L'application s'utilise voiture à l'arrêt : le système la bloque dès que le véhicule roule
+• Les notifications de mise à jour arrivent aussi en roulant
+• Interface Android Automotive standard : grands éléments, lisible d'un coup d'œil
+• Aucun compte supplémentaire, aucune publicité, aucun suivi
+
+Cette application utilise l'API publique de Parcel (parcelapp.net). Elle est indépendante et n'est pas éditée par Parcel ni par les transporteurs cités.
+
+Code source : https://github.com/juju35/aaos-parcel

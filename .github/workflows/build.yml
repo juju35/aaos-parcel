@@ -1,0 +1,36 @@
+name: Build
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    name: Debug APK
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: "17"
+      - uses: gradle/actions/setup-gradle@v5
+      - name: Build
+        run: ./gradlew --no-daemon assembleDebug 2>&1 | tee build.log; exit "${PIPESTATUS[0]}"
+      # Kotlin compiler errors and warnings on the pull request ("e: file:///…/X.kt:12:5 message").
+      - name: Annotations
+        if: failure()
+        run: |
+          sed -nE "s#^([ew]): file://${GITHUB_WORKSPACE}/([^:]+):([0-9]+):([0-9]+) (.*)#\1 \2 \3 \4 \5#p" build.log |
+            while read -r level file line col message; do
+              [ "$level" = e ] && kind=error || kind=warning
+              echo "::$kind file=$file,line=$line,col=$col::$message"
+            done
+          # Anything else (resources, manifest, dependencies): Gradle's own summary.
+          what=$(awk '/What went wrong:/ {f = 1; next} f && /^\* Try:/ {exit} f' build.log | tr '\n' ' ')
+          [ -z "$what" ] || echo "::error title=Gradle::$what"
+      - uses: actions/upload-artifact@v5
+        with:
+          name: parcel-debug-apk
+          path: app/build/outputs/apk/debug/*.apk

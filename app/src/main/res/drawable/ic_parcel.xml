@@ -1,0 +1,9 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp" android:height="24dp"
+    android:viewportWidth="256" android:viewportHeight="256">
+    <!-- Box of ha-parcel's icon (brand/icon.png). -->
+    <path
+        android:strokeColor="#FFFFFFFF" android:strokeWidth="18"
+        android:strokeLineJoin="round" android:strokeLineCap="round"
+        android:pathData="M128,24 L224,74 L224,182 L128,232 L32,182 L32,74 Z M32,74 L128,124 L224,74 M128,124 L128,232 M80,49 L176,99 L176,140" />
+</vector>

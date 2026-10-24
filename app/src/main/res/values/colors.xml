@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Parcel amber, as ha-parcel's icon. -->
+    <color name="brand">#D97706</color>
+    <color name="brand_dark">#F59E0B</color>
+    <color name="accent">#1565C0</color>
+    <color name="accent_dark">#64A8F0</color>
+    <color name="launcher_background">#F59E0B</color>
+</resources>
