@@ -21,9 +21,11 @@ object ParcelApi {
 
     /**
      * The deliveries call's JSON body, checked. Always the "recent" list (under way and recently delivered):
-     * a delivery that turns delivered stays in it, so its last update can still be notified.
+     * a delivery that turns delivered stays in it, so its last update can still be notified. The key "demo" gives
+     * made-up deliveries (DemoData).
      */
     fun fetchDeliveries(apiKey: String): String {
+        if (DemoData.isDemo(apiKey)) return DemoData.body()
         val body = try {
             Http.getText("$BASE/deliveries/?filter_mode=recent", mapOf("api-key" to apiKey))
         } catch (e: HttpException) {
