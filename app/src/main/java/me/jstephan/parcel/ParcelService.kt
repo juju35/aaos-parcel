@@ -10,6 +10,7 @@ import androidx.car.app.Session
 import androidx.car.app.validation.HostValidator
 import me.jstephan.parcel.ui.DeliveryDetailScreen
 import me.jstephan.parcel.ui.DeliveryListScreen
+import me.jstephan.parcel.ui.SetupScreen
 import me.jstephan.parcel.work.Notifier
 
 class ParcelService : CarAppService() {
@@ -27,11 +28,12 @@ class ParcelService : CarAppService() {
     override fun onCreateSession(): Session = ParcelSession()
 }
 
-/** Opens on the list, or on a delivery when started from its notification. */
+/** Opens on the list (the setup message without a key), or on a delivery when started from its notification. */
 class ParcelSession : Session() {
     private val screenManager: ScreenManager get() = carContext.getCarService(ScreenManager::class.java)
 
     override fun onCreateScreen(intent: Intent): Screen {
+        if (!Prefs(carContext).hasKey) return SetupScreen(carContext)
         val list = DeliveryListScreen(carContext)
         val key = intent.getStringExtra(Notifier.EXTRA_DELIVERY) ?: return list
         screenManager.push(list)
@@ -40,6 +42,7 @@ class ParcelSession : Session() {
 
     override fun onNewIntent(intent: Intent) {
         val key = intent.getStringExtra(Notifier.EXTRA_DELIVERY) ?: return
+        if (!Prefs(carContext).hasKey) return
         screenManager.popToRoot()
         screenManager.push(DeliveryDetailScreen(carContext, key))
     }

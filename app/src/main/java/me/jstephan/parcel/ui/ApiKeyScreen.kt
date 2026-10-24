@@ -4,6 +4,7 @@ import androidx.car.app.CarContext
 import androidx.car.app.Screen
 import androidx.car.app.model.Action
 import androidx.car.app.model.InputCallback
+import androidx.car.app.model.ParkedOnlyOnClickListener
 import androidx.car.app.model.Template
 import androidx.car.app.model.signin.InputSignInMethod
 import androidx.car.app.model.signin.SignInTemplate
@@ -42,7 +43,14 @@ class ApiKeyScreen(carContext: CarContext) : Screen(carContext) {
             .setHeaderAction(Action.BACK)
             .setInstructions(carContext.getString(R.string.api_key_instructions))
             .setLoading(checking)
-        if (prefs.hasKey) builder.addAction(Ui.action(carContext, R.string.api_key_delete, onClick = ::deleteKey))
+        if (prefs.hasKey) {
+            // The host only takes parked-only actions on a sign-in template.
+            val delete = Action.Builder()
+                .setTitle(carContext.getString(R.string.api_key_delete))
+                .setOnClickListener(ParkedOnlyOnClickListener.create { deleteKey() })
+                .build()
+            builder.addAction(delete)
+        }
         return builder.build()
     }
 
@@ -75,6 +83,7 @@ class ApiKeyScreen(carContext: CarContext) : Screen(carContext) {
         CheckWorker.schedule(carContext)
         Ui.toast(carContext, R.string.api_key_saved)
         // The first key is also when notifications start: ask for the permission now, parked.
+        setResult(true)
         Ui.requestNotifications(carContext) { screenManager.pop() }
     }
 

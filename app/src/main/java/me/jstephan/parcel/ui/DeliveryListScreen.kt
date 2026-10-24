@@ -43,9 +43,9 @@ class DeliveryListScreen(carContext: CarContext) : Screen(carContext) {
     /** The last check straight away, then a new one if it is older than [STALE_MS]. */
     private fun load() {
         if (!prefs.hasKey) {
-            deliveries = null
-            error = null
-            invalidate()
+            // The key was deleted in the settings: back to the setup message, as a screen of its own.
+            screenManager.push(SetupScreen(carContext))
+            finish()
             return
         }
         lifecycleScope.launch {
@@ -83,10 +83,6 @@ class DeliveryListScreen(carContext: CarContext) : Screen(carContext) {
     }
 
     override fun onGetTemplate(): Template {
-        if (!prefs.hasKey) {
-            val configure = Ui.action(carContext, R.string.configure, primary = true) { screenManager.push(ApiKeyScreen(carContext)) }
-            return Ui.message(carContext, R.string.setup_message, R.drawable.ic_key, Action.APP_ICON, configure)
-        }
         val list = deliveries
         val err = error
         if (list == null && err != null) {

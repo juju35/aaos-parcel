@@ -66,7 +66,7 @@ check
 
 # The button sits under the centred message; its height depends on the screen, so try down the
 # middle until the API key screen opens its keyboard.
-for y in 0.62 0.66 0.70 0.74 0.78 0.82 0.58 0.86; do
+for y in 0.58 0.62 0.54 0.66 0.70 0.74 0.78 0.82; do
   tap 0.5 "$y"
   sleep 3
   if keyboard_shown; then
