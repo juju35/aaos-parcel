@@ -1,4 +1,8 @@
+<p align="center"><img src="play/graphics/icon-512.png" alt="Parcel" width="128"></p>
+
 # Parcel — Android Automotive
+
+![Parcel](play/graphics/feature-graphic.png)
 
 [Parcel](https://parcelapp.net) deliveries for **Android Automotive OS 12+** (API 31), built with the
 [Car App Library](https://developer.android.com/training/cars/apps) templates (POI category),
@@ -15,13 +19,13 @@ so it follows the platform's driving guidelines out of the box.
 
 ## Screenshots
 
+On the Android Automotive emulator (generic image, templates host), with the demo key. These are the Google Play
+listing screenshots, refreshed by running the Emulator workflow by hand with *screenshots*.
+
 | Deliveries | Delivery | Settings |
 | --- | --- | --- |
-| ![Deliveries](screenshots/list.png) | ![Delivery detail](screenshots/detail.png) | ![Settings](screenshots/settings.png) |
-
-Mock-ups of the templates as the car's host draws them (dark theme, 1408 × 792), made with the demo
-deliveries by `python scripts/screenshots.py` (Playwright, the app's own icons). The Screenshots workflow runs it
-again when the script, the icons or the demo data change.
+| ![Deliveries](play/graphics/automotive/landscape-1-list.png) | ![Delivery](play/graphics/automotive/landscape-2-detail.png) | ![Settings](play/graphics/automotive/landscape-3-settings.png) |
+| ![Deliveries, portrait](play/graphics/automotive/portrait-1-list.png) | ![Delivery, portrait](play/graphics/automotive/portrait-2-detail.png) | ![Settings, portrait](play/graphics/automotive/portrait-3-settings.png) |
 
 ## Data
 
@@ -80,7 +84,6 @@ On a real car, third-party templated apps are installed through Google Play (int
 | Update release notes | Rewrites a release's notes from `CHANGELOG.md` (input `tag`) |
 | Clean up merged branches | Deletes merged branches after each pull request and weekly |
 | Stale | Marks and closes inactive issues and pull requests |
-| Screenshots | Makes the README screenshots again and commits them when they change |
 
 Release signing uses the repository secrets `SIGNING_KEYSTORE_BASE64`, `SIGNING_STORE_PASSWORD`,
 `SIGNING_KEY_ALIAS` and `SIGNING_KEY_PASSWORD`; without them the release is signed with the debug key
@@ -88,8 +91,7 @@ Release signing uses the repository secrets `SIGNING_KEYSTORE_BASE64`, `SIGNING_
 
 ## Google Play
 
-Listing texts, graphics (`python scripts/play_graphics.py`), privacy policy and the Play Console answers are in
-[`play/`](play/README.md).
+Listing texts, graphics, privacy policy and the Play Console answers are in [`play/`](play/README.md).
 
 **Upload key** (once, kept outside the repository; Play App Signing holds the app signing key):
 

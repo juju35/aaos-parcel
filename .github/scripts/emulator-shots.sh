@@ -113,7 +113,7 @@ shot settings 5
 check
 
 # One run of the hourly check (WorkManager on JobScheduler): it must not crash.
-JOB=$(adb shell dumpsys jobscheduler 2>/dev/null | grep -o "JOB #u[0-9]*a[0-9]*/[0-9]*: [0-9a-f]* $PKG/androidx.work" | head -1 | sed 's#.*/\([0-9]*\):.*#\1#')
+JOB=$(adb shell dumpsys jobscheduler "$PKG" 2>/dev/null | grep -oE "JOB #u[0-9]+a[0-9]+/[0-9]+" | head -1 | sed 's#.*/##')
 if [ -n "$JOB" ]; then
   adb shell cmd jobscheduler run -f "$PKG" "$JOB" | while read -r l; do echo "::notice::check job $JOB: $l"; done
   sleep 10
