@@ -1,8 +1,8 @@
 # Parcel — Android Automotive
 
 [Parcel](https://parcelapp.net) deliveries for **Android Automotive OS 12+** (API 31), built with the
-[Car App Library](https://developer.android.com/training/cars/apps) templates, with a notification whenever a
-delivery has news. The car counterpart of [ha-parcel](https://github.com/juju35/ha-parcel).
+[Car App Library](https://developer.android.com/training/cars/apps) templates (POI category),
+so it follows the platform's driving guidelines out of the box.
 
 - Deliveries under way first, by expected date: status in colour, expected date, last event and where it happened
 - Optionally the recently delivered ones too (Settings › Deliveries listed)
@@ -10,7 +10,7 @@ delivery has news. The car counterpart of [ha-parcel](https://github.com/juju35/
   **Go** hands the pickup point to the car's navigation app when the parcel awaits pickup
 - **Hourly check** in the background: one notification per delivery with a new status or event; tapping it opens
   the delivery
-- Settings: Parcel API key, deliveries listed, notifications on or off
+- Settings: Parcel API key (typed parked, checked before it is kept), deliveries listed, notifications on or off
 - Demo key `demo`: made-up deliveries with no Parcel account, for a try-out, the emulator run and the Play review
 
 ## Screenshots
@@ -19,31 +19,25 @@ delivery has news. The car counterpart of [ha-parcel](https://github.com/juju35/
 | --- | --- | --- |
 | ![Deliveries](screenshots/list.png) | ![Delivery detail](screenshots/detail.png) | ![Settings](screenshots/settings.png) |
 
-Mock-ups of the templates as the car's host draws them (dark theme, 1408 × 792), made with the demo deliveries
-by `python scripts/screenshots.py` (Playwright, the app's own icons). The Screenshots workflow runs it again when
-the script, the icons or the demo data change. Real screenshots from the Automotive emulator are in
-`play/graphics/automotive`.
+Mock-ups of the templates as the car's host draws them (dark theme, 1408 × 792), made with the demo
+deliveries by `python scripts/screenshots.py` (Playwright, the app's own icons). The Screenshots workflow runs it
+again when the script, the icons or the demo data change.
 
-## Parcel API key
+## Data
 
-Generate a key at [web.parcelapp.net](https://web.parcelapp.net) (Parcel Premium), then in the app: Settings ›
-Parcel API key, parked (the car's keyboard is locked while driving). The key is checked with one call before it is
-kept, stays on the car (left out of Android backups) and is only sent to `api.parcel.app`.
+Same API and logic as [ha-parcel](https://github.com/juju35/ha-parcel):
 
-## How it checks
-
-Same API as ha-parcel: `GET https://api.parcel.app/external/deliveries/?filter_mode=recent` with the `api-key`
-header, limited by Parcel to **20 requests an hour**.
-
-| When | What |
+| What | Source |
 | --- | --- |
-| Every hour (WorkManager, with a network, while the car is on) | Fetch, compare each delivery's status and latest event with the previous check, notify the ones that changed |
-| Opening the app | Last check shown at once, fetched again if older than 5 minutes |
-| Refresh button | Fetch now |
-| New key | The key's check is the first one: deliveries already there are not notified |
+| Deliveries, statuses, events, expected dates | Parcel external API, `GET https://api.parcel.app/external/deliveries/?filter_mode=recent` with the `api-key` header, **20 requests an hour** |
+| API key | Generated at [web.parcelapp.net](https://web.parcelapp.net) (Parcel Premium); stays on the car, left out of Android backups, only sent to `api.parcel.app` |
+| Carrier names | Parcel's public `supported_carriers.json` (no key), daily cache |
+| Changes | Each delivery's status and latest event, compared with the previous check (kept on the device) |
 
-The "recent" list is always fetched, so a delivery that turns delivered still gets its notification; "under way
-only" just filters the screen. The carriers' names come from Parcel's public `supported_carriers.json`, once a day.
+The hourly check (WorkManager, with a network, while the car is on) notifies the deliveries that changed; opening
+the app shows the last check at once and fetches again after 5 minutes. A new key's own check is the first one, so
+the deliveries already there are not notified. The "recent" list is always fetched, so a delivery that turns
+delivered still gets its notification; "under way only" just filters the screen.
 
 ## Layout
 
@@ -54,7 +48,7 @@ app/src/main/java/me/jstephan/parcel/
 ├── Prefs.kt                  # API key (not backed up), filter, notifications
 ├── data/                     # HTTP, Parcel API client, models, repository (cache + change detection), demo data
 ├── work/                     # CheckWorker (hourly), Notifier
-└── ui/                       # list, detail (ListTemplate), settings, API key (SignInTemplate)
+└── ui/                       # list, detail, settings (ListTemplate), API key (SignInTemplate), setup (MessageTemplate)
 ```
 
 ## Build and run
@@ -65,8 +59,8 @@ app/src/main/java/me/jstephan/parcel/
 
 Test on an emulator from Android Studio's Device Manager with an **Automotive** system image
 (Android 12L / API 32 or later, "with Google APIs/Play"). Debug builds accept any templates host;
-release builds only the hosts in the library's allowlist. To run the hourly check without waiting, force its job
-(WorkManager runs on JobScheduler; the id is in the dump):
+release builds only the hosts in the library's allowlist. Type `demo` as the API key to try it without a Parcel
+account. To run the hourly check without waiting, force its job (WorkManager runs on JobScheduler):
 
 ```sh
 adb shell dumpsys jobscheduler | grep -A2 me.jstephan.parcel   # JOB #u0a123/<id>
