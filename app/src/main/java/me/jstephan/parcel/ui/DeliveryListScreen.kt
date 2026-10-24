@@ -62,15 +62,23 @@ class DeliveryListScreen(carContext: CarContext) : Screen(carContext) {
                 deliveries = repo.refresh().deliveries
                 error = null
                 if (manual) CarToast.makeText(carContext, R.string.refreshed, CarToast.LENGTH_SHORT).show()
+            } catch (e: ParcelException.Auth) {
+                // Said even on an automatic refresh: the list shown won't change until the key does.
+                failed(e, alwaysTell = true)
             } catch (e: IOException) {
-                Log.w(TAG, "Refresh failed", e)
-                if (deliveries == null) {
-                    error = Ui.errorMessage(e)
-                } else if (manual || e is ParcelException.Auth) {
-                    Ui.toast(carContext, Ui.errorMessage(e))
-                }
+                failed(e, alwaysTell = manual)
             }
             invalidate()
+        }
+    }
+
+    /** No list yet: the error replaces it. Otherwise the last check stays, with a toast if [alwaysTell]. */
+    private fun failed(e: IOException, alwaysTell: Boolean) {
+        Log.w(TAG, "Refresh failed", e)
+        if (deliveries == null) {
+            error = Ui.errorMessage(e)
+        } else if (alwaysTell) {
+            Ui.toast(carContext, Ui.errorMessage(e))
         }
     }
 
@@ -120,7 +128,8 @@ class DeliveryListScreen(carContext: CarContext) : Screen(carContext) {
      * then the last event and where it happened.
      */
     private fun row(delivery: Delivery): Row {
-        val status = SpannableStringBuilder(Ui.colored(carContext.getString(delivery.status.label), Ui.statusColor(delivery.status)))
+        val label = carContext.getString(delivery.status.label)
+        val status = SpannableStringBuilder(Ui.colored(label, Ui.statusColor(delivery.status)))
         val detail = if (delivery.status == Status.DELIVERED) null else Ui.expected(carContext, delivery)
         (detail ?: repo.carrierName(delivery.carrierCode).takeIf { it.isNotBlank() })?.let { status.append(" · ").append(it) }
 
