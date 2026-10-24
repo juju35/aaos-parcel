@@ -1,0 +1,11 @@
+# Changelog
+
+## 0.1.0
+
+First version.
+
+### Features
+- Deliveries of the Parcel account, under way first by expected date: status in colour, expected date, last event and place.
+- Delivery detail: expected date or window, carrier and tracking number, extra information, every event; "Go" to the pickup point when the parcel awaits pickup.
+- Hourly check in the background (WorkManager, with a network): a notification for each delivery with a new status or event, opening its detail.
+- Settings: Parcel API key (checked before it is kept, left out of backups), deliveries listed (under way and recently delivered, or under way only), notifications on or off.

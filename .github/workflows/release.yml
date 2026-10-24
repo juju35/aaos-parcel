@@ -1,0 +1,109 @@
+name: Release
+
+# Publishes a GitHub release whenever main carries a version that has no tag yet:
+# bump appVersion in app/build.gradle.kts, add its CHANGELOG.md section, push, and the release follows.
+# Signed with the upload key from the secrets SIGNING_KEYSTORE_BASE64, SIGNING_STORE_PASSWORD,
+# SIGNING_KEY_ALIAS and SIGNING_KEY_PASSWORD; without them, with the debug key (emulator / adb only).
+# With the PLAY_SERVICE_ACCOUNT_JSON secret, the bundle also goes to Google Play: track from the
+# PLAY_TRACK variable (default automotive:qa, internal testing), status from PLAY_RELEASE_STATUS
+# (default draft, the only one allowed until the app is published; then completed).
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    env:
+      PLAY_JSON: ${{ secrets.PLAY_SERVICE_ACCOUNT_JSON }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Read version
+        id: version
+        run: |
+          VERSION="$(sed -n 's/^val appVersion = "\(.*\)"$/\1/p' app/build.gradle.kts)"
+          test -n "$VERSION"
+          grep -q "^## $VERSION$" CHANGELOG.md || { echo "::error::No CHANGELOG.md section for $VERSION"; exit 1; }
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          if git rev-parse -q --verify "refs/tags/v$VERSION" >/dev/null; then
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - uses: actions/setup-java@v5
+        if: steps.version.outputs.exists == 'false'
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - uses: gradle/actions/setup-gradle@v5
+        if: steps.version.outputs.exists == 'false'
+
+      - name: Build APK and bundle
+        if: steps.version.outputs.exists == 'false'
+        env:
+          KEYSTORE_BASE64: ${{ secrets.SIGNING_KEYSTORE_BASE64 }}
+          SIGNING_STORE_PASSWORD: ${{ secrets.SIGNING_STORE_PASSWORD }}
+          SIGNING_KEY_ALIAS: ${{ secrets.SIGNING_KEY_ALIAS }}
+          SIGNING_KEY_PASSWORD: ${{ secrets.SIGNING_KEY_PASSWORD }}
+        run: |
+          if [ -n "$KEYSTORE_BASE64" ]; then
+            echo "$KEYSTORE_BASE64" | base64 -d > "$RUNNER_TEMP/upload.jks"
+            export SIGNING_KEYSTORE="$RUNNER_TEMP/upload.jks"
+          elif [ -n "$PLAY_JSON" ]; then
+            echo "::error::PLAY_SERVICE_ACCOUNT_JSON is set but not the signing secrets: Google Play refuses debug-signed bundles"
+            exit 1
+          else
+            echo "::warning::No signing secrets: release signed with the debug key (not accepted by Google Play)"
+          fi
+          ./gradlew --no-daemon assembleRelease bundleRelease
+          VERSION="${{ steps.version.outputs.version }}"
+          cp app/build/outputs/apk/release/app-release.apk "parcel-$VERSION.apk"
+          cp app/build/outputs/bundle/release/app-release.aab "parcel-$VERSION.aab"
+          .github/scripts/release-notes.sh "$VERSION" > notes.md
+          test -s notes.md
+          # Play release notes: play/whatsnew/<locale>.txt, 500 characters at most.
+          mkdir -p whatsnew
+          for f in play/whatsnew/*.txt; do
+            [ -f "$f" ] || continue
+            [ "$(wc -m < "$f")" -le 500 ] || { echo "::error file=$f::Longer than 500 characters"; exit 1; }
+            cp "$f" "whatsnew/whatsnew-$(basename "$f" .txt)"
+          done
+
+      - name: Annotations
+        if: failure()
+        run: .github/scripts/sarif-annotations.sh app/build/reports/*.sarif
+
+      - name: Publish release
+        if: steps.version.outputs.exists == 'false'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ steps.version.outputs.version }}
+          name: v${{ steps.version.outputs.version }}
+          target_commitish: ${{ github.sha }}
+          files: |
+            parcel-${{ steps.version.outputs.version }}.apk
+            parcel-${{ steps.version.outputs.version }}.aab
+          body_path: notes.md
+          make_latest: true
+
+      - name: Upload to Google Play
+        if: steps.version.outputs.exists == 'false' && env.PLAY_JSON != ''
+        uses: r0adkll/upload-google-play@v1
+        with:
+          serviceAccountJsonPlainText: ${{ env.PLAY_JSON }}
+          packageName: me.jstephan.parcel
+          releaseFiles: parcel-${{ steps.version.outputs.version }}.aab
+          releaseName: ${{ steps.version.outputs.version }}
+          track: ${{ vars.PLAY_TRACK || 'automotive:qa' }}
+          status: ${{ vars.PLAY_RELEASE_STATUS || 'draft' }}
+          whatsNewDirectory: whatsnew

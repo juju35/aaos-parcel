@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Parcel</string>
+
+    <!-- List -->
+    <string name="list_title">Colis</string>
+    <string name="no_deliveries">Aucun colis à suivre.</string>
+    <string name="refreshed">Colis à jour</string>
+    <string name="retry">Réessayer</string>
+    <string name="setup_message">Ajoutez votre clé d\'API Parcel pour suivre vos colis et être notifié à chaque mise à jour.</string>
+    <string name="configure">Configurer</string>
+    <string name="error_network">Impossible de joindre Parcel. Vérifiez la connexion.</string>
+    <string name="error_rate_limit">Parcel limite les vérifications à 20 par heure. Réessayez plus tard.</string>
+    <string name="error_auth">Clé d\'API Parcel refusée. Saisissez-en une nouvelle dans les réglages.</string>
+
+    <!-- Statuses (Parcel status_code) -->
+    <string name="status_delivered">Livré</string>
+    <string name="status_frozen">Suivi suspendu</string>
+    <string name="status_in_transit">En transit</string>
+    <string name="status_awaiting_pickup">À retirer</string>
+    <string name="status_out_for_delivery">En cours de livraison</string>
+    <string name="status_not_found">Introuvable</string>
+    <string name="status_failed_attempt">Échec de livraison</string>
+    <string name="status_exception">Incident</string>
+    <string name="status_info_received">Informations reçues</string>
+    <string name="status_unknown">Statut inconnu</string>
+
+    <!-- Detail -->
+    <string name="expected_on">Prévu le %1$s</string>
+    <string name="expected_between">Prévu entre le %1$s et le %2$s</string>
+    <string name="extra_information">Informations</string>
+    <string name="no_events">Aucun événement pour l\'instant</string>
+    <string name="delivery_missing">Ce colis n\'est plus suivi dans Parcel.</string>
+    <string name="navigate">Y aller</string>
+    <string name="navigation_unavailable">Aucune application de navigation disponible</string>
+
+    <!-- Settings -->
+    <string name="settings">Réglages</string>
+    <string name="api_key_title">Clé d\'API Parcel</string>
+    <string name="api_key_set">Configurée</string>
+    <string name="api_key_missing">À configurer</string>
+    <string name="filter_title">Colis affichés</string>
+    <string name="filter_recent">En cours et livrés récemment</string>
+    <string name="filter_active">En cours uniquement</string>
+    <string name="notifications_title">Notifications</string>
+    <string name="check_hourly">Vérification toutes les heures</string>
+    <string name="last_check">Dernière vérification %1$s</string>
+    <string name="permission_denied">Notifications refusées</string>
+
+    <!-- API key -->
+    <string name="api_key_hint">Clé d\'API</string>
+    <string name="api_key_instructions">Générez une clé sur web.parcelapp.net (abonnement Parcel Premium requis), à l\'arrêt.</string>
+    <string name="api_key_empty">Saisissez la clé d\'API.</string>
+    <string name="api_key_saved">Clé enregistrée</string>
+    <string name="api_key_delete">Supprimer la clé</string>
+    <string name="api_key_deleted">Clé supprimée</string>
+
+    <!-- Notifications -->
+    <string name="channel_name">Suivi des colis</string>
+    <string name="channel_description">Une notification à chaque nouveau statut ou événement d\'un colis.</string>
+    <string name="notification_auth_title">Clé d\'API Parcel refusée</string>
+    <string name="notification_auth_text">Saisissez une nouvelle clé dans les réglages de l\'application.</string>
+</resources>

@@ -1,0 +1,20 @@
+{
+  "minTokens": 50,
+  "threshold": 3,
+  "absolute": false,
+  "gitignore": true,
+  "format": [
+    "kotlin"
+  ],
+  "ignore": [
+    "**/build/**",
+    "**/.gradle/**",
+    "**/.git/**"
+  ],
+  "reporters": [
+    "console"
+  ],
+  "ignorePattern": [
+    "^import "
+  ]
+}

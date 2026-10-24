@@ -1,0 +1,1 @@
+Première version : liste des colis Parcel, fiche détaillée, vérification toutes les heures et notification à chaque mise à jour.

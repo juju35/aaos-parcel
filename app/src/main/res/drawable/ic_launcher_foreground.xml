@@ -1,0 +1,11 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp" android:height="108dp"
+    android:viewportWidth="108" android:viewportHeight="108">
+    <!-- Same drawing as ha-parcel's brand/icon.png (256 viewBox), scaled into the 66dp safe zone. -->
+    <group android:scaleX="0.34" android:scaleY="0.34" android:translateX="10.48" android:translateY="10.48">
+        <path
+            android:strokeColor="#FFFFFFFF" android:strokeWidth="14"
+            android:strokeLineJoin="round" android:strokeLineCap="round"
+            android:pathData="M128,52 L200,90 L200,170 L128,208 L56,170 L56,90 Z M56,90 L128,128 L200,90 M128,128 L128,208 M92,71 L164,109 L164,140" />
+    </group>
+</vector>
