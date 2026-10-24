@@ -5,6 +5,7 @@ import android.content.Intent
 import android.content.pm.ApplicationInfo
 import androidx.car.app.CarAppService
 import androidx.car.app.Screen
+import androidx.car.app.ScreenManager
 import androidx.car.app.Session
 import androidx.car.app.validation.HostValidator
 import me.jstephan.parcel.ui.DeliveryDetailScreen
@@ -28,6 +29,8 @@ class ParcelService : CarAppService() {
 
 /** Opens on the list, or on a delivery when started from its notification. */
 class ParcelSession : Session() {
+    private val screenManager: ScreenManager get() = carContext.getCarService(ScreenManager::class.java)
+
     override fun onCreateScreen(intent: Intent): Screen {
         val list = DeliveryListScreen(carContext)
         val key = intent.getStringExtra(Notifier.EXTRA_DELIVERY) ?: return list
