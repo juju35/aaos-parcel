@@ -1,9 +1,16 @@
 # Changelog
 
-## Unreleased
+## 0.1.1
+
+### Fixes
+- A delivery update found by the app itself (on opening, or with the refresh button) is now notified too; before, only the hourly check notified, and an update the app had already seen never was.
+- Deleting the API key while a check was running could notify "Clé d'API Parcel refusée".
+- Expected dates Parcel sends as text ("2026-10-26 09:00:00") are shown as a day ("lun. 26 oct."), as the timestamps.
+- Parcel trimming the oldest events of a delivery no longer counts as an update.
 
 ### Changes
-- Build: Android Gradle plugin 9.4 with its built-in Kotlin (no more Kotlin Android plugin), Gradle 9.8.
+- A delivery Parcel adds by itself (from your e-mails) is notified when it shows up; still nothing on the first check after a new key.
+- Build: Android Gradle plugin 9.4 with its built-in Kotlin (no more Kotlin Android plugin), Gradle 9.8; unit tests for the Parcel answers, the update detection and the dates, run by the Build workflow.
 
 ## 0.1.0
 

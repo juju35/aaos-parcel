@@ -44,6 +44,9 @@ data class Delivery(
     val title: String get() = description.ifBlank { trackingNumber }
     val lastEvent: TrackingEvent? get() = events.firstOrNull()
 
-    /** Changes whenever Parcel has news about the delivery: a new status or a new event. */
-    val signature: String get() = listOf(status.code, events.size, lastEvent?.text, lastEvent?.date).joinToString("|")
+    /**
+     * Changes whenever Parcel has news about the delivery: a new status or a new latest event. Not the number of
+     * events, which changes when Parcel trims old ones.
+     */
+    val signature: String get() = listOf(status.code, lastEvent?.text, lastEvent?.date, lastEvent?.location).joinToString("|")
 }
