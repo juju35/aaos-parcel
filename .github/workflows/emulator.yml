@@ -2,7 +2,8 @@ name: Emulator
 
 # Runs the app on an Android Automotive emulator (Automotive with Google APIs, which has the
 # templates host), landscape 1024 x 768 and portrait 800 x 1280, with the "demo" API key (made-up
-# deliveries, no Parcel account): fails if the app crashes or the host refuses a template. Screenshots are kept as an artifact; run it by hand with "screenshots"
+# deliveries, no Parcel account): fails if the app crashes or the host refuses a template.
+# Screenshots are kept as an artifact; run it by hand with "screenshots"
 # to commit them to play/graphics/automotive for the Play listing.
 on:
   push:
