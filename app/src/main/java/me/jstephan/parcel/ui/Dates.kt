@@ -8,7 +8,13 @@ import java.util.Locale
 /** Expected delivery days, as "sam. 25 oct.". */
 object Dates {
     // What Parcel's date_expected has been seen as.
-    private val PATTERNS = listOf("yyyy-MM-dd'T'HH:mm:ss", "yyyy-MM-dd HH:mm:ss", "yyyy-MM-dd HH:mm", "yyyy-MM-dd", "dd/MM/yyyy")
+    private val PATTERNS = listOf(
+        "yyyy-MM-dd'T'HH:mm:ss",
+        "yyyy-MM-dd HH:mm:ss",
+        "yyyy-MM-dd HH:mm",
+        "yyyy-MM-dd",
+        "dd/MM/yyyy"
+    )
 
     fun day(epochSeconds: Long): String = format(Date(epochSeconds * 1000))
 
