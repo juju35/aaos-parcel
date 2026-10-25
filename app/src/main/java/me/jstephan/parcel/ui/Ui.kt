@@ -24,9 +24,6 @@ import me.jstephan.parcel.data.Delivery
 import me.jstephan.parcel.data.ParcelException
 import me.jstephan.parcel.data.Status
 import java.io.IOException
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
 
 /** Small helpers shared by the screens. */
 object Ui {
@@ -54,16 +51,14 @@ object Ui {
 
     /** "Prévu le sam. 25 oct.", "Prévu entre le … et le …"; null when Parcel has no date. */
     fun expected(context: Context, delivery: Delivery): String? {
-        val from = delivery.expectedFrom?.let(::day) ?: delivery.dateExpected ?: return null
-        val to = delivery.expectedTo?.let(::day) ?: delivery.dateExpectedEnd
+        val from = delivery.expectedFrom?.let { Dates.day(it) } ?: delivery.dateExpected?.let { Dates.day(it) } ?: return null
+        val to = delivery.expectedTo?.let { Dates.day(it) } ?: delivery.dateExpectedEnd?.let { Dates.day(it) }
         return if (to == null || to == from) {
             context.getString(R.string.expected_on, from)
         } else {
             context.getString(R.string.expected_between, from, to)
         }
     }
-
-    private fun day(epochSeconds: Long): String = SimpleDateFormat("EEE d MMM", Locale.FRANCE).format(Date(epochSeconds * 1000))
 
     @StringRes
     fun errorMessage(e: IOException): Int = when (e) {

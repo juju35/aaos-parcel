@@ -17,8 +17,8 @@ import java.io.IOException
 import java.util.concurrent.TimeUnit
 
 /**
- * The hourly check: fetches the deliveries and notifies those Parcel has news about. Runs while the car is on and
- * connected; WorkManager keeps the schedule across restarts.
+ * The hourly check: fetches the deliveries; the repository notifies those Parcel has news about. Runs while the car
+ * is on and connected; WorkManager keeps the schedule across restarts.
  */
 class CheckWorker(context: Context, params: WorkerParameters) : CoroutineWorker(context, params) {
 
@@ -26,9 +26,8 @@ class CheckWorker(context: Context, params: WorkerParameters) : CoroutineWorker(
         val prefs = Prefs(applicationContext)
         if (!prefs.hasKey) return Result.success()
         return try {
-            val update = DeliveryRepository.get(applicationContext).refresh()
+            DeliveryRepository.get(applicationContext).refresh()
             prefs.authFailureNotified = false
-            if (prefs.notifications) Notifier.deliveriesChanged(applicationContext, update.changed)
             Result.success()
         } catch (e: ParcelException.Auth) {
             Log.w(TAG, "API key refused", e)

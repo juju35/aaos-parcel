@@ -6,7 +6,7 @@ plugins {
 }
 
 // The one place to bump before a release: versionCode follows (1.2.3 -> 10203).
-val appVersion = "0.1.0"
+val appVersion = "0.1.1"
 
 android {
     namespace = "me.jstephan.parcel"
@@ -90,5 +90,7 @@ dependencies {
     implementation(libs.lifecycle.runtime)
     implementation(libs.coroutines.android)
     implementation(libs.work.runtime)
+    testImplementation(libs.junit)
+    testImplementation(libs.org.json)
     detektPlugins(libs.detekt.formatting)
 }

@@ -7,6 +7,7 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import me.jstephan.parcel.Prefs
+import me.jstephan.parcel.work.Notifier
 import org.json.JSONException
 import org.json.JSONObject
 import java.io.File
@@ -18,16 +19,27 @@ class Update(val deliveries: List<Delivery>, val changed: List<Delivery>)
 /**
  * The deliveries of the last check, shared by the screens and the hourly check. The last answer is kept on disk,
  * with each delivery's [Delivery.signature], to show the list straight away and to tell what changed next time.
+ * Whoever asks (the hourly check, the list opening, the refresh button), the changes are notified here: a check
+ * from the screen must not use them up without a notification.
  */
-class DeliveryRepository private constructor(context: Context) {
+class DeliveryRepository private constructor(private val context: Context) {
     private val prefs = Prefs(context)
     private val deliveriesFile = File(context.filesDir, "deliveries.json")
-    private val seenFile = File(context.filesDir, "seen.json")
+
+    // v2: the signature no longer counts the events. A new file name, so the first check after the update
+    // compares nothing instead of notifying every delivery.
+    private val seenFile = File(context.filesDir, "seen-v2.json")
+    private val oldSeenFile = File(context.filesDir, "seen.json")
     private val carriersFile = File(context.filesDir, "carriers.json")
     private val mutex = Mutex()
 
     private var loaded = false
+
+    // Written on Dispatchers.IO, read by the screens on the main thread.
+    @Volatile
     private var deliveries: List<Delivery>? = null
+
+    @Volatile
     private var carriers: Map<String, String> = emptyMap()
 
     /** Deliveries of the last check; null before the first one. */
@@ -37,11 +49,15 @@ class DeliveryRepository private constructor(context: Context) {
 
     fun carrierName(code: String): String = carriers[code] ?: code
 
-    /** Asks Parcel for the deliveries. Nothing counts as changed on the very first check. */
+    /**
+     * Asks Parcel for the deliveries and notifies those with news (when notifications are on). Without a key (it was
+     * just deleted), nothing happens: that isn't a refused key.
+     */
     suspend fun refresh(): Update = locked {
-        val key = prefs.apiKey ?: throw ParcelException.Auth("No API key")
+        val key = prefs.apiKey ?: return@locked Update(deliveries.orEmpty(), emptyList())
         val update = store(ParcelApi.fetchDeliveries(key))
         refreshCarriers()
+        if (prefs.notifications) Notifier.deliveriesChanged(context, update.changed)
         update
     }
 
@@ -55,6 +71,7 @@ class DeliveryRepository private constructor(context: Context) {
             prefs.lastCheck = 0L
             deliveriesFile.delete()
             seenFile.delete()
+            oldSeenFile.delete()
             body?.let {
                 store(it)
                 refreshCarriers()
@@ -64,10 +81,9 @@ class DeliveryRepository private constructor(context: Context) {
 
     private fun store(body: String): Update {
         val list = ParcelApi.parseDeliveries(body)
-        val seen = readSeen()
-        val changed = if (seen == null) emptyList() else list.filter { d -> seen[d.key].let { it != null && it != d.signature } }
+        val changed = Changes.detect(readSeen(), list)
         deliveriesFile.writeText(body)
-        seenFile.writeText(JSONObject(list.associate { it.key to it.signature }).toString())
+        seenFile.writeText(JSONObject(Changes.signatures(list)).toString())
         deliveries = list
         prefs.lastCheck = System.currentTimeMillis()
         return Update(list, changed)
@@ -99,6 +115,7 @@ class DeliveryRepository private constructor(context: Context) {
     private fun load() {
         if (loaded) return
         loaded = true
+        oldSeenFile.delete()
         deliveries = readOrNull(deliveriesFile, ParcelApi::parseDeliveries)
         carriers = readOrNull(carriersFile, ParcelApi::parseCarriers).orEmpty()
     }
