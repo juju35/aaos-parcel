@@ -2,6 +2,10 @@
 
 ## 0.2.0
 
+### Changes
+- Car app category is now IoT (`androidx.car.app.category.IOT`) instead of POI: a delivery tracker is not a point-of-interest app, and IoT is the approved Car App Library category that matches a status/service app.
+- Delivery notifications use default importance instead of high: a parcel update is informational (`CATEGORY_STATUS`), never a heads-up while driving, so it belongs in the notification center at a calmer level.
+
 ### Fixes
 - Removed a stray Python wheel (`nothing-0.0.3-py2.py3-none-any.whl`) accidentally committed at the repository root; it was unrelated to the Android project and referenced by no build, script or workflow.
 
