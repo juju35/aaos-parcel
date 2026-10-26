@@ -20,7 +20,7 @@ object Notifier {
     private const val NOTIFICATION_ID = 1
 
     fun createChannel(context: Context) {
-        val channel = NotificationChannelCompat.Builder(CHANNEL, NotificationManagerCompat.IMPORTANCE_HIGH)
+        val channel = NotificationChannelCompat.Builder(CHANNEL, NotificationManagerCompat.IMPORTANCE_DEFAULT)
             .setName(context.getString(R.string.channel_name))
             .setDescription(context.getString(R.string.channel_description))
             .build()
@@ -57,7 +57,7 @@ object Notifier {
             .setContentTitle(title)
             .setContentText(text)
             .setCategory(NotificationCompat.CATEGORY_STATUS)
-            .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
             .setAutoCancel(true)
         if (details.isNotEmpty()) builder.setStyle(NotificationCompat.BigTextStyle().bigText("$text\n$details"))
         openApp(context, tag, deliveryKey)?.let(builder::setContentIntent)
