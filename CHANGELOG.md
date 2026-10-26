@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.2.0 - 2026-10-26
+
+### Fixes
+- Removed a stray Python wheel (`nothing-0.0.3-py2.py3-none-any.whl`) accidentally committed at the repository root; it was unrelated to the Android project and referenced by no build, script or workflow.
+
 ## 0.1.1
 
 ### Fixes
