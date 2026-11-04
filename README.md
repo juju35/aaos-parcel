@@ -2,6 +2,8 @@
 
 # Parcel — Android Automotive
 
+[![Buy Me a Coffee](https://img.shields.io/badge/Buy%20Me%20a%20Coffee-FFDD00?logo=buymeacoffee&logoColor=black)](https://buymeacoffee.com/julienstep9)
+
 ![Parcel](play/graphics/feature-graphic.png)
 
 [Parcel](https://parcelapp.net) deliveries for **Android Automotive OS 12+** (API 31), built with the
